@@ -20,8 +20,8 @@
 
 use std::env;
 use std::fs;
+use std::path::Path;
 use std::process::Command;
-use std::fs::metadata;
 use std::collections::HashSet;
 
 extern crate regex;
@@ -107,7 +107,7 @@ fn main()
     {
         for f in files.into_string().unwrap().split(":")
         {
-            package_binary(f, &mut context);
+            package_binary(&String::from(f), &mut context);
         }
     }
 
@@ -116,7 +116,7 @@ fn main()
     {
         for dir in asm_dir.into_string().unwrap().split(":")
         {
-            assemble_directory(dir, &mut context);
+            assemble_directory(String::from(dir), &mut context);
         }
     }
 
@@ -137,7 +137,7 @@ fn main()
    => binary_path = path to binary file to convert
       context    = build context
 */
-fn package_binary(binary_path: &String, &String, mut context: &mut Context)
+fn package_binary(binary_path: &String, mut context: &mut Context)
 {
     /* generate path to output .o object file for this given binary */
     let leafname = String::from(Path::new(binary_path).file_name().unwrap().to_str().unwrap());
@@ -147,7 +147,7 @@ fn package_binary(binary_path: &String, &String, mut context: &mut Context)
     let result = Command::new(&context.ld_exec)
         .arg("-r")
         .arg("--format=binary")
-        .arg(&binary_file)
+        .arg(&binary_path)
         .arg("-o")
         .arg(&object_file)
         .output()
