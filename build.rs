@@ -160,13 +160,12 @@ fn package_binary(binary_path: &String, mut context: &mut Context)
     }
 
     /* when we use ld, it defines the _start, _end, _size symbols using the full filename
-    of the binary file, which pollutes the symbol with the architecture and project layout, eg:
-    _binary_boot_riscv64_supervisor_start
+    of the binary file, which pollutes the symbol with the architecture and project layout.
 
     rename the symbols so they can be accessed generically just by their component name.
     we need to convert the '/' and '.' in the path to _ FIXME: this very Unix/Linux-y */
-    let symbol_prefix = format!("_binary_{}_{}_", &binary_path.replace("/", "_").replace(".", "_"), &leafname);
-    let renamed_prefix = format!("_binary_{}_", &leafname);
+    let symbol_prefix = format!("_binary_{}_", &binary_path.replace("/", "_").replace(".", "_"));
+    let renamed_prefix = format!("_binary_{}_", &leafname.replace(".", "_"));
 
     /* select correct executable */
     let rename = Command::new(&context.oc_exec)
@@ -206,24 +205,27 @@ fn register_object(path: &String, context: &mut Context)
 */
 fn assemble_directory(slurp_from: String, context: &mut Context)
 {
-    /* we'll just ignore empty/inaccessible directories */
-    if let Ok(directory) = fs::read_dir(slurp_from)
+    /* no longer accept missing directories, though don't fail empty directories */
+    let directory = match fs::read_dir(&slurp_from)
     {
-        for file in directory
+        Ok(d) => d,
+        Err(e) => panic!("Cannot assembly directory {}: {}", &slurp_from, e)
+    };
+
+    for file in directory
+    {
+        if let Ok(file) = file
         {
-            if let Ok(file) = file
+            /* assume everything in the asm directory can be assembled if it is a file */
+            if let Ok(metadata) = file.metadata()
             {
-                /* assume everything in the asm directory can be assembled if it is a file */
-                if let Ok(metadata) = file.metadata()
+                if metadata.is_file() == true
                 {
-                    if metadata.is_file() == true
-                    {
-                        println!(
-                            "cargo:rerun-if-changed={}",
-                            file.path().to_str().unwrap()
-                        );
-                        assemble(file.path().to_str().unwrap(), context);
-                    }
+                    println!(
+                        "cargo:rerun-if-changed={}",
+                        file.path().to_str().unwrap()
+                    );
+                    assemble(file.path().to_str().unwrap(), context);
                 }
             }
         }
