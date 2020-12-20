@@ -246,7 +246,7 @@ fn package_binary(binary_path: &String, mut context: &mut Context)
             &binary_path, &object_file, String::from_utf8(result.stdout).unwrap(), String::from_utf8(result.stderr).unwrap()));
     }
 
-    println!("cargo:rerun-if-changed={}", &object_file);
+    println!("cargo:rerun-if-changed={}", &binary_path);
     register_object(&object_file, &mut context);
 }
 
@@ -283,9 +283,6 @@ fn assemble_directory(slurp_from: String, context: &mut Context)
             {
                 if metadata.is_file() == true
                 {
-                    println!(
-                        "cargo:rerun-if-changed={}", file.path().to_str().unwrap()
-                    );
                     assemble(file.path().to_str().unwrap(), context);
                 }
             }
@@ -334,6 +331,7 @@ fn assemble(path: &str, mut context: &mut Context)
             &path, String::from_utf8(result.stdout).unwrap(), String::from_utf8(result.stderr).unwrap()));
     }
 
+    println!("cargo:rerun-if-changed={}", &path);
     register_object(&object_file, &mut context);
 }
 
@@ -362,7 +360,7 @@ fn link_archive(context: &mut Context)
             &archive_path, String::from_utf8(result.stdout).unwrap(), String::from_utf8(result.stderr).unwrap()));
     }
 
-    /* tell the linker where to find our archive */
+    /* tell the linker where to find our archive, and ensure anything relying on it is rebuilt as necessary */
     println!("cargo:rustc-link-search={}", &context.output_dir);
     println!("cargo:rustc-link-lib=static={}", &archive_name);
 }
