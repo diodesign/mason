@@ -246,6 +246,7 @@ fn package_binary(binary_path: &String, mut context: &mut Context)
             &binary_path, &object_file, String::from_utf8(result.stdout).unwrap(), String::from_utf8(result.stderr).unwrap()));
     }
 
+    println!("cargo:rerun-if-changed={}", &object_file);
     register_object(&object_file, &mut context);
 }
 
@@ -257,7 +258,7 @@ fn register_object(path: &String, context: &mut Context)
     {
         panic!("Cannot register object {} - an object already exists in that location", &path);
     }
-}   
+}
 
 /* Run through a directory of .s assembly source code,
    add each .s file to the project, and assemble each file using the appropriate tools
