@@ -75,7 +75,8 @@ struct Target
     pub cpu_arch: String,    /* define the CPU architecture to generate code for */
     pub gnu_prefix: String,  /* locate the GNU as and ar tools */ 
     pub platform: String,    /* locate the tail of the platform directory in src, eg riscv for src/platform-riscv */
-    pub width: usize,        /* pointer width in bits */
+    pub ptr_width: usize,    /* pointer width in bits */
+    pub fp_width: usize,     /* floating-point register width in bits (or 0 for no FPU) */
     pub abi: String          /* define the ABI for this target */
 }
 
@@ -86,20 +87,13 @@ impl Target
     {
         match triple.split('-').next().expect("Badly formatted target triple").as_ref()
         {
-            "riscv32imac" => Target
-            {
-                cpu_arch: String::from("rv32imac"),
-                gnu_prefix: String::from("riscv32"),
-                platform: String::from("riscv"),
-                width: 32,
-                abi: String::from("ilp32")
-            },
             "riscv64imac" => Target
             {
                 cpu_arch: String::from("rv64imac"),
                 gnu_prefix: String::from("riscv64"),
                 platform: String::from("riscv"),
-                width: 64,
+                ptr_width: 64,
+                fp_width: 0,
                 abi: String::from("lp64")
             },
             "riscv64gc" => Target
@@ -107,7 +101,8 @@ impl Target
                 cpu_arch: String::from("rv64gc"),
                 gnu_prefix: String::from("riscv64"),
                 platform: String::from("riscv"),
-                width: 64,
+                ptr_width: 64,
+                fp_width: 64,
                 abi: String::from("lp64")
             },
             unknown_target => panic!("Unsupported target '{}'", &unknown_target)
@@ -298,7 +293,7 @@ fn assemble(path: &str, mut context: &mut Context)
 {
     /* create name from .s source file's path - extract just the leafname and drop the
     file extension. so extract 'start' from 'src/platform-blah/asm/start.s' */
-    let re = Regex::new(r"(([A-Za-z0-9_]+)(/))+(?P<leaf>[A-Za-z0-9]+)(\.s)").unwrap();
+    let re = Regex::new(r"(([A-Za-z0-9_]+)(/))+(?P<leaf>[A-Za-z0-9_]+)(\.s)").unwrap();
     let matches = re.captures(&path);
     if matches.is_none() == true
     {
@@ -318,7 +313,9 @@ fn assemble(path: &str, mut context: &mut Context)
         .arg("-mabi")
         .arg(&context.target.abi)
         .arg("--defsym")
-        .arg(format!("ptrwidth={}", &context.target.width))
+        .arg(format!("ptrwidth={}", &context.target.ptr_width))
+        .arg("--defsym")
+        .arg(format!("fpwidth={}", &context.target.fp_width))
         .arg("-o")
         .arg(&object_file)
         .arg(path)

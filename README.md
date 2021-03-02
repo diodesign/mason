@@ -19,7 +19,6 @@ Substitute `leafname` in the above for the binary file's leafname. A file's leaf
 
 | Cargo target     | Binutils executable |
 |------------------|---------------------|
-| `riscv32imac-*`  | `riscv32-linux-gnu-*` |
 | `riscv64imac-*`  | `riscv64-linux-gnu-*` |
 | `riscv64gc-*`    | `riscv64-linux-gnu-*` |
 
