@@ -211,8 +211,8 @@ fn package_binary(binary_path: &String, mut context: &mut Context)
 
     if result.status.success() != true
     {
-        panic!(format!("Conversion of {} to object {} failed:\n{}\n{}",
-            &binary_path, &object_file, String::from_utf8(result.stdout).unwrap(), String::from_utf8(result.stderr).unwrap()));
+        panic!("Conversion of {} to object {} failed:\n{}\n{}",
+            &binary_path, &object_file, String::from_utf8(result.stdout).unwrap(), String::from_utf8(result.stderr).unwrap());
     }
 
     /* when we use ld, it defines the _start, _end, _size symbols using the full filename
@@ -237,8 +237,8 @@ fn package_binary(binary_path: &String, mut context: &mut Context)
 
     if rename.status.success() != true
     {
-        panic!(format!("Symbol rename for {} in {} failed:\n{}\n{}",
-            &binary_path, &object_file, String::from_utf8(result.stdout).unwrap(), String::from_utf8(result.stderr).unwrap()));
+        panic!("Symbol rename for {} in {} failed:\n{}\n{}",
+            &binary_path, &object_file, String::from_utf8(result.stdout).unwrap(), String::from_utf8(result.stderr).unwrap());
     }
 
     println!("cargo:rerun-if-changed={}", &binary_path);
@@ -324,8 +324,8 @@ fn assemble(path: &str, mut context: &mut Context)
 
     if result.status.success() != true
     {
-        panic!(format!("Assembling {} failed:\n{}\n{}",
-            &path, String::from_utf8(result.stdout).unwrap(), String::from_utf8(result.stderr).unwrap()));
+        panic!("Assembling {} failed:\n{}\n{}",
+            &path, String::from_utf8(result.stdout).unwrap(), String::from_utf8(result.stderr).unwrap());
     }
 
     println!("cargo:rerun-if-changed={}", &path);
@@ -353,8 +353,8 @@ fn link_archive(context: &mut Context)
 
     if result.status.success() != true
     {
-        panic!(format!("Archiving {} failed:\n{}\n{}",
-            &archive_path, String::from_utf8(result.stdout).unwrap(), String::from_utf8(result.stderr).unwrap()));
+        panic!("Archiving {} failed:\n{}\n{}",
+            &archive_path, String::from_utf8(result.stdout).unwrap(), String::from_utf8(result.stderr).unwrap());
     }
 
     /* tell the linker where to find our archive, and ensure anything relying on it is rebuilt as necessary */
