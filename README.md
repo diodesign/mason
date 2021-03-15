@@ -1,13 +1,8 @@
 # Mason
 
-Mason provides a build.rs primarily for [Diosix](https://diosix.org) components. It can automatically assemble low-level assembly code and package up binary objects so that they can be linked with and accessed by high-level code. It looks for two environment variables to tell it where to find code and binaries to process:
+Mason provides a [Cargo build.rs](https://doc.rust-lang.org/cargo/reference/build-scripts.html) primarily for [Diosix](https://diosix.org) components. It can automatically assemble low-level assembly code and package up binary objects so that they can be linked with and accessed by high-level Rust code.
 
-| Env variable     | Description |
-|------------------|-------------|
-| `MASON_ASM_DIRS` | Colon-separated directory pathnames of assembly code to assemble |
-| `MASON_FILES`    | Colon-separated pathnames of binary files to package up          |
-
-Assembly files are processed by the directory; binary files are processed individually. Exported symbols in the assembly code can be referenced by high-level code. Binary files will each be exported with the following symbols:
+It searches for a configuration file called `mason.toml` in the host file system tree from the current working directory up. This file controls how Mason works, and its format is described in `build.rs`. Exported symbols in code assembled by Mason can be referenced by the high-level code. Binary files will each be exported with the following symbols:
 
 | Symbol                   | Description |
 |--------------------------|-------------|
@@ -30,4 +25,4 @@ Please [email](mailto:chrisw@diosix.org) project lead Chris Williams if you have
 
 ### Copyright and license <a name="copyright"></a>
 
-Copyright &copy; Chris Williams, 2020. See [LICENSE](LICENSE) for distribution and use of source code and binaries.
+Copyright &copy; Chris Williams, 2020-2021. See [LICENSE](LICENSE) for distribution and use of source code and binaries.
