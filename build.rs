@@ -103,7 +103,7 @@ impl Target
                 platform: String::from("riscv"),
                 ptr_width: 64,
                 fp_width: 64,
-                abi: String::from("lp64")
+                abi: String::from("lp64d")
             },
             unknown_target => panic!("Unsupported target '{}'", &unknown_target)
         }
