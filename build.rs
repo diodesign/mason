@@ -6,7 +6,7 @@
  * It assumes the necessary GNU binutils are present on the host system to assemble code and package binaries.
  * 
  * Mason is controlled by a TOML-compliant manifest configuration file named mason.toml.
- * It will search up the host file system tree from the current working directory for this file .
+ * It will search up the host file system tree from the current working directory for this file.
  * If no configuration file is found, Mason will exit with an error. The file format is:
  * 
  * defaults.include_files = array of binary file pathnames to link with the high-level code.
